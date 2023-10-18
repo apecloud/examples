@@ -132,7 +132,7 @@ class http_markdown_reader:
         if response.status_code == 200:
             document_content = response.text
         else:
-            print("获取文档内容时发生错误:", response.status_code)
+            print("An error occurred while retrieving the document content:", response.status_code)
 
         tups = self.parse_tups(document_content)
         results = []
@@ -160,7 +160,7 @@ class http_markdown_reader:
             }
             nodes.append(NodeWithEmbedding(node=node, embedding=vector))
         addPoints = connector.add(nodes)
-        print("文档已加载至向量数据库...可通过qdrant web-ui组件查看详情")
+        print("The document has been loaded into the vector database... You can view the details through the Qdrant web UI tool")
 
     def parse_tups(
             self, content: str, errors: str = "ignore"
@@ -195,7 +195,7 @@ import requests
 import openai
 import os
 
-query_str = "如何在windows中安装kbcli?"
+query_str = "how to install kbcli in Windows?"
 query_contents = client.search(collection_name="demo",
               query_vector=embedding_model.get_text_embedding(query_str),
               with_vectors=True,
