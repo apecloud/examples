@@ -32,7 +32,7 @@ using `kbcli addon enable vllm` and `kbcli cluster create --cluster-definition v
 
 notes: vLLM is a quantized LLM model, and even though it has been quantized, it still puts some strain on running smoothly in a regular laptop's Docker environment. We recommend choosing an appropriate cloud environment for the large model
 
-## Demo in Jupyter addon
+## Demo in Jupyter Application
 In addition, KubeBlocks also provides Jupyter application that support most AIGC libraries, including llama-index,lang-chain,transform, and more. You can start developing and debugging your AIGC demo in your Kubernetes environment with simple commands.
 
 1.  using `kbcli addon enable jupyter-notebook` enable jupyter-notebook application
