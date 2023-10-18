@@ -7,7 +7,7 @@ Another more convenient way is to deploy a mini Kubernetes environment on your l
 
 1. install **kbcli**(the cli tools assisting you to interact with KubeBlocks)
 
-    For specific installation instructions, please refer to the [official website].(https://kubeblocks.io/docs/preview/user_docs/installation/install-with-kbcli/install-kbcli#install-kbcli-1)
+    For specific installation instructions, please refer to the [official website](https://kubeblocks.io/docs/preview/user_docs/installation/install-with-kbcli/install-kbcli#install-kbcli-1).
 2. install **KubeBlocks**
 
 `kbcli kubeblocks install --version 0.7.0-beta.6`
