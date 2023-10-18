@@ -33,7 +33,7 @@ using `kbcli addon enable llm` and `kbcli cluster create --cluster-definition vl
 notes: vLLM requires Nvidia GPU resources, and the GPU memory size should be bigger than model size, which is usually around 26G for 13b model and 14G for 7b model. We recommend choosing an appropriate cloud environment for the large model.
 
 ### development
-run `kbcli cluster create --cluster-definition ggml` to create a cluster for development, it only requires cpu to start llm service, and can work on the laptop. 
+run `kbcli cluster create --cluster-definition ggml --set cpu=3,memory=6Gi,replicas=1` to create a cluster for development, it only requires cpu to start llm service, and can work on the laptop. 
 
 notes: ggml is a quantized LLM model, and even though it has been quantized, it still puts some strain on running smoothly in a regular laptop's Docker environment. It could be really slow, because no gpu accelerate in it, we recommend choose ggml only for development use. 
 
