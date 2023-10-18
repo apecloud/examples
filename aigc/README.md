@@ -35,7 +35,7 @@ notes: vLLM requires Nvidia GPU resources, and the GPU memory size should be big
 ### development
 run `kbcli cluster create --cluster-definition ggml` to create a cluster for development, it only requires cpu to start llm service, and can work on the laptop. 
 
-notes: ggml is a quantized LLM model, and even though it has been quantized, it still puts some strain on running smoothly in a regular laptop's Docker environment. We recommend choosing an appropriate cloud environment for the large model
+notes: ggml is a quantized LLM model, and even though it has been quantized, it still puts some strain on running smoothly in a regular laptop's Docker environment. It could be really slow, because no gpu accelerate in it, we recommend choose ggml only for development use. 
 
 ## Demo in Jupyter application
 In addition, KubeBlocks also provides Jupyter application that support most AIGC libraries, including llama-index,lang-chain,transform, and more. You can start developing and debugging your AIGC demo in your Kubernetes environment with simple commands.
