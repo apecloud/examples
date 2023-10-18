@@ -74,14 +74,13 @@ reader = MarkdownReader()
 ```
 ![prepare](/aigc/img/prepare.png)
 2. create vector database client.   
+
+When creating a client to connect to the vector database, we need to know the backend address of that database. You can use the `kbcli cluster describe` command to view the vector database information in KubeBlocks.
+![cluster-describe](/aigc/img/cluster-describe.png)
 ```python
 import qdrant_client
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client.models import VectorParams,Distance
-```
-When creating a client to connect to the vector database, we need to know the backend address of that database. You can use the `kbcli cluster describe` command to view the vector database information in KubeBlocks.
-![cluster-describe](/aigc/img/cluster-describe.png)
-```python
 """
 `kbcli cluster describe <qdrant_cluster_name>` get the qdrant server's information 
 """
