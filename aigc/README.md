@@ -17,13 +17,13 @@ KubeBlocks supports the management of vector databases, such as Qdrant, Milvus, 
 
 1. enable `qdrant` addon
     
-   using `kbcil addon enable qdrant` enable qdrant addon. 
+   using `kbcli addon enable qdrant` enable qdrant addon. 
    
    You can use `kbcli clusterdefinition list` to check if the addon is ready.
    ![cd-list](/aigc/img/cd-list.png)
 2. create qdrant cluster
 
-    using `kbcli cluster create --cluster-defnition qdrant` and `kbcli cluster list` to check if the cluster is Running. This process typically takes 5-8 minutes, depending on your network conditions.
+    using `kbcli cluster create my-qdrant --cluster-defnition qdrant` and `kbcli cluster list` to check if the cluster is Running. This process typically takes 5-8 minutes, depending on your network conditions.
     ![cluster-create](/aigc/img/cluster-create.png)
 
 ## Deploy private LLM in KubeBlocks
@@ -37,6 +37,7 @@ In addition, KubeBlocks also provides Jupyter application that support most AIGC
 
 1.  using `kbcli addon enable jupyter-notebook` enable jupyter-notebook application
 2. using `kbcli dashboard open jupyter-notebook` open the Jupyter dashboard.
+![open-jupyter](/aigc/img/open-jupyter.png)
 
 ### An AI question-and-answer assistant demo in KubeBlocks AIGC infrastructure
 Next,I will demonstrate a demo of building an intelligent AI question-and-answer assistant for the KubeBlocks user-docs on the AIGC infrastructure built on KubeBlocks.
@@ -78,13 +79,13 @@ import qdrant_client
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client.models import VectorParams,Distance
 ```
-When creating a client to connect to the vector database, we need to know the backend address of that database. You can use the 'kbcil cluster describe' command to view the vector database information in KubeBlocks.
+When creating a client to connect to the vector database, we need to know the backend address of that database. You can use the `kbcli cluster describe` command to view the vector database information in KubeBlocks.
 ![cluster-describe](/aigc/img/cluster-describe.png)
 ```python
 """
 `kbcli cluster describe <qdrant_cluster_name>` get the qdrant server's information 
 """
-url = "peach41-qdrant.default.svc.cluster.local"
+url = "my-qdrant-qdrant.default.svc.cluster.local"
 port = 6333
 grpc_port = 6334
 distance = "Cosine"
@@ -145,12 +146,15 @@ for root, dirs, files in os.walk(directory):
         process_file(file_path)
 ```
 And We have currently added visualization support for the Qdrant. You can use 'kubectl' to port-forward the Qdrant service to your local machine and view the vector database's status in a web page to confirm that the documents have been loaded into the vector database.
-`kubectl port-forward service/peach41-qdrant 10000:3000 6333:6333`("3000" is the web-ui service port and "6333" is the database service port.)
 
+- `kubectl port-forward services/my-qdrant-qdrant 10000:3000 6333:6333`("3000" is the web-ui service port and "6333" is the database service port.)
+- open `127.0.0.1:10000` in your browser.
 ![qdrant-web-ui](/aigc/img/qdrant-web-ui.png)
 
 #### Query with LLM
 Finally, we will implement the functionality to query with private LLM. In this step, we will embed the query question, perform a 'similarity match' query in the vector database, and then use a custom prompt to call our deployed private LLM API to obtain the query result.
+
+
 ```python
 from langchain import PromptTemplate
 from pydantic import BaseModel
@@ -191,12 +195,22 @@ prompt_template = """
 """
 prompt = PromptTemplate.from_template(prompt_template)
 prompt_str = prompt.format(query=query_str, context=pack_context)
+# check our prompt_str
+print(prompt_str)
+```
+![check-prompt](/aigc/img/check-prompt.png)
 
+```python
+# use our private LLM API 
 LLM_API = "http://a780a53170a7140f58efd575b03d60b5-667ac4219aac185d.elb.ap-northeast-1.amazonaws.com:8000/generate_stream"
 data = {
     "prompt": prompt_str,
 }
-response = requests.post(LLM_API, json=data,stream=False)
-print(response)
+response = requests.post(LLM_API, json=data,stream=True)
+
+for chunk in response.iter_lines(chunk_size=2048, decode_unicode=False, delimiter=b"\0"):
+    if chunk:
+        data = json.loads(chunk.decode("utf-8"))
+        print(data.text)
 ```
 
