@@ -111,41 +111,73 @@ connector = QdrantVectorStore(
 
 #### Upload our user-docs
 Now, we will upload some KubeBlocks user docs and load them into our vector database using the previously prepared embedding model.
-![upload-files](/aigc/img/upload-files.png)
 ```python
+import os
+from typing import List, Tuple, Optional
+import requests
+from llama_index.readers.file.markdown_reader import MarkdownReader
+from llama_index.schema import Document,NodeRelationship, RelatedNodeInfo
 from llama_index.data_structs.data_structs import Node
 from llama_index.vector_stores.types import NodeWithEmbedding
-from llama_index.schema import NodeRelationship, RelatedNodeInfo
-import os
-from typing import List
 
-def process_file(file):
-    docs = reader.load_data(file)
 
-    nodes: List[NodeWithEmbedding] = []
-    for doc in docs:
-        vector = embedding_model.get_text_embedding(doc.text)
-        doc.embedding = vector
-        node = Node(
-            text=doc.text,
-            doc_id=doc.doc_id,
-        )
-        node.relationships = {
-            NodeRelationship.SOURCE: RelatedNodeInfo(
-                node_id=node.node_id, metadata={"source": file}
+class http_markdown_reader:
+    def __init__(self):
+        self.reader = MarkdownReader()
+        
+    def load_data(self, url):
+        file_name = os.path.basename(url)
+        response = requests.get(url)
+        document_content = ""
+        if response.status_code == 200:
+            document_content = response.text
+        else:
+            print("获取文档内容时发生错误:", response.status_code)
+
+        tups = self.parse_tups(document_content)
+        results = []
+        nodes: List[NodeWithEmbedding] = []
+        for header, value in tups:
+            if header is None:
+                results.append(Document(text=value, metadata={}))
+            else:
+                results.append(
+                    Document(text=f"\n\n{header}\n{value}", metadata={})
+                )
+                
+        for doc in results:
+            
+            vector = embedding_model.get_text_embedding(doc.text)
+            doc.embedding = vector
+            node = Node(
+                text=doc.text,
+                doc_id=doc.doc_id,
             )
-        }
-        nodes.append(NodeWithEmbedding(node=node, embedding=vector))
+            node.relationships = {
+                NodeRelationship.SOURCE: RelatedNodeInfo(
+                    node_id=node.node_id, metadata={"source": file_name}
+                )
+            }
+            nodes.append(NodeWithEmbedding(node=node, embedding=vector))
+        addPoints = connector.add(nodes)
+        print("文档已加载至向量数据库...可通过qdrant web-ui组件查看详情")
 
-    addPoints = connector.add(nodes)
+    def parse_tups(
+            self, content: str, errors: str = "ignore"
+    ) -> List[Tuple[Optional[str], str]]:
+        """Parse file into tuples."""
 
-directory = "./files"
-for root, dirs, files in os.walk(directory):
-    for file in files:
-        file_path = os.path.join(root, file)
-        process_file(file_path)
+        content = self.reader.remove_hyperlinks(content)
+        content = self.reader.remove_images(content)
+        markdown_tups = self.reader.markdown_to_tups(content)
+        return markdown_tups
+    
+    
+reader = http_markdown_reader()
+docs = reader.load_data("https://raw.githubusercontent.com/apecloud/kubeblocks/main/docs/user_docs/installation/install-with-kbcli/install-kbcli.md")
+
 ```
-And We have currently added visualization support for the Qdrant. You can use 'kubectl' to port-forward the Qdrant service to your local machine and view the vector database's status in a web page to confirm that the documents have been loaded into the vector database.
+And We have currently added visualization support for the Qdrant. You can use `kubectl` to port-forward the Qdrant service to your local machine and view the vector database's status in a web page to confirm that the documents have been loaded into the vector database.
 
 - `kubectl port-forward services/my-qdrant-qdrant 10000:3000 6333:6333`("3000" is the web-ui service port and "6333" is the database service port.)
 - open `127.0.0.1:10000` in your browser.
