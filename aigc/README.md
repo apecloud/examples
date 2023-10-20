@@ -23,7 +23,7 @@ KubeBlocks supports the management of vector databases, such as Qdrant, Milvus, 
    ![cd-list](/aigc/img/cd-list.png)
 2. create qdrant cluster
 
-    using `kbcli cluster create my-qdrant --cluster-defnition qdrant` and `kbcli cluster list` to check if the cluster is Running. This process typically takes 5-8 minutes, depending on your network conditions.
+    using `kbcli cluster create my-qdrant --cluster-definition qdrant` and `kbcli cluster list` to check if the cluster is Running. This process typically takes 5-8 minutes, depending on your network conditions.
     ![cluster-create](/aigc/img/cluster-create.png)
 
 ## Deploy private LLM in KubeBlocks
@@ -214,7 +214,7 @@ for query in query_contents:
 '''
 you can custom your own prompt
 '''
-prompt_template = """
+prompt_template = """Q:
 上下文信息如下:
 ----------------\n
 {context}
@@ -223,25 +223,17 @@ prompt_template = """
 根据提供的上下文信息,然后回答问题：{query}。
 
 请确保回答准确和详细。
-"""
+A:"""
 prompt = PromptTemplate.from_template(prompt_template)
 prompt_str = prompt.format(query=query_str, context=pack_context)
-# check our prompt_str
-print(prompt_str)
-```
-![check-prompt](/aigc/img/check-prompt.png)
 
-```python
-# use our private LLM API 
-LLM_API = "http://a780a53170a7140f58efd575b03d60b5-667ac4219aac185d.elb.ap-northeast-1.amazonaws.com:8000/generate_stream"
+LLM_API = "http://my-llm-ggml.default.svc.cluster.local:8000/v1/completions"
 data = {
     "prompt": prompt_str,
+    "temperature": 0,
+    "max_tokens": 512
 }
-response = requests.post(LLM_API, json=data,stream=True)
-
-for chunk in response.iter_lines(chunk_size=2048, decode_unicode=False, delimiter=b"\0"):
-    if chunk:
-        data = json.loads(chunk.decode("utf-8"))
-        print(data.text)
+response = requests.post(LLM_API, json=data)
+answer = response.json().get('choices', '')
+print(answer[0]["text"])
 ```
-
