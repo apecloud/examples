@@ -28,7 +28,7 @@ KubeBlocks supports the management of vector databases, such as Qdrant, Milvus, 
 
 ## Deploy private LLM in KubeBlocks
 
-using `kbcli addon enable llm` and `kbcli cluster create --cluster-definition vllm` will create a priavate LLM in KubeBlocks.
+using `kbcli addon enable llm` enable private llm addon. Then `kbcli cluster create --cluster-definition gllm`or `kbcli cluster create --cluster-definition gllm` create a private LLM in KubeBlocks.
 
 notes: vLLM requires Nvidia GPU resources, and the GPU memory size should be bigger than model size, which is usually around 26G for 13b model and 14G for 7b model. We recommend choosing an appropriate cloud environment for the large model.
 
