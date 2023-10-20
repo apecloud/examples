@@ -40,7 +40,9 @@ notes: ggml is a quantized version of LLM model, and even though it has been qua
 ## Demo in Jupyter application
 In addition, KubeBlocks also provides Jupyter application that support most AIGC libraries, including llama-index,lang-chain,transform, and more. You can start developing and debugging your AIGC demo in your Kubernetes environment with simple commands.
 
-1.  using `kbcli addon enable jupyter-notebook` enable jupyter-notebook application
+1. using `kbcli addon enable jupyter-notebook` enable jupyter-notebook application
+      
+      Note: In the 0.7.0-beta.9 version of the Jupyter addon, we have provided a demonstration demo for the document question-and-answer assistant. You can run the `docs-QA-assistantor.ipynb` in the `/work` directory step by step.
 2. using `kbcli dashboard open jupyter-notebook` open the Jupyter dashboard.
 ![open-jupyter](/aigc/img/open-jupyter.png)
 
