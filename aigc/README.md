@@ -33,7 +33,7 @@ using `kbcli addon enable llm` enable private llm addon. Then `kbcli cluster cre
 notes: vLLM requires Nvidia GPU resources, and the GPU memory size should be bigger than model size, which is usually around 26G for 13b model and 14G for 7b model. We recommend choosing an appropriate cloud environment for the large model.
 
 ### development
-run `kbcli cluster create --cluster-definition ggml --set cpu=3,memory=6Gi,replicas=1` to create a cluster for development, it only requires CPUs to start LLM service, and can work on the laptop. 
+run `kbcli cluster create my-llm --cluster-definition ggml --set cpu=6,memory=6Gi,replicas=1` to create a cluster for development, it only requires CPUs to start LLM service, and can work on the laptop. Please select the appropriate `cpu` and `memory` based on your computer resources
 
 notes: ggml is a quantized version of LLM model, and even though it has been quantized, it still puts some strain on running smoothly in a regular laptop's Docker environment. It could be really slow, because no gpu accelerate in it, we recommend using ggml only for development purpose. 
 
@@ -180,7 +180,7 @@ class http_markdown_reader:
     
     
 reader = http_markdown_reader()
-docs = reader.load_data("https://raw.githubusercontent.com/apecloud/kubeblocks/main/docs/user_docs/installation/install-with-kbcli/install-kbcli.md")
+docs = reader.load_data("https://jihulab.com/1aal/kubeblocks/-/raw/main/docs/user_docs/installation/install-with-kbcli/install-kbcli.md")
 
 ```
 And We have currently added visualization support for the Qdrant. You can use `kubectl` to port-forward the Qdrant service to your local machine and view the vector database's status in a web page to confirm that the documents have been loaded into the vector database.
