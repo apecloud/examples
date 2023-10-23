@@ -28,12 +28,12 @@ KubeBlocks supports the management of vector databases, such as Qdrant, Milvus, 
 
 ## Deploy private LLM in KubeBlocks
 
-using `kbcli addon enable llm` enable private llm addon. Then `kbcli cluster create --cluster-definition vllm`or `kbcli cluster create --cluster-definition vllm` create a private LLM in KubeBlocks.
+using `kbcli addon enable llm` enable private llm addon. Then `kbcli cluster create --cluster-definition vllm` create a private LLM in KubeBlocks.
 
 notes: vLLM requires Nvidia GPU resources, and the GPU memory size should be bigger than model size, which is usually around 26G for 13b model and 14G for 7b model. We recommend choosing an appropriate cloud environment for the large model.
 
 ### development
-run `kbcli cluster create my-llm --cluster-definition ggml --set cpu=6,memory=6Gi,replicas=1` to create a cluster for development, it only requires CPUs to start LLM service, and can work on the laptop. Please select the appropriate `cpu` and `memory` based on your computer resources
+In this demo, we use `ggml` as the our private LLM. Run `kbcli cluster create my-llm --cluster-definition ggml --set cpu=6,memory=6Gi,replicas=1` to create a cluster for development, it only requires CPUs to start LLM service, and can work on the laptop. Please select the appropriate `cpu` and `memory` based on your computer resources
 
 notes: ggml is a quantized version of LLM model, and even though it has been quantized, it still puts some strain on running smoothly in a regular laptop's Docker environment. It could be really slow, because no gpu accelerate in it, we recommend using ggml only for development purpose. 
 
